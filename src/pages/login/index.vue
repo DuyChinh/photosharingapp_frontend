@@ -47,24 +47,25 @@
         </div>
         <div class="container" id="container" :class="{'right-panel-active': !isSignUp}">
             <div class="form-container sign-up-container">
-            <form action="#">
-                <img class="login_logo" src="../../../public/images/signup.png" alt=""/>
-                <h1 class="mb-3">Sign Up</h1>
-                <!-- <div class="social-container">
-                <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-                </div> -->
-                <!-- <span>or use your email for registration</span> -->
-                <!-- <input type="text" placeholder="Name" /> -->
-                <input type="email" placeholder="Nickname or Email" />
-                <input type="password" placeholder="Password" />
-                <button class="mt-2">Sign Up</button>
-            </form>
+                <form @submit.prevent="handleSignUp">
+                    <img class="login_logo" src="../../../public/images/signup.png" alt=""/>
+                    <h1 class="mb-3">Sign Up</h1>
+                    <!-- <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    </div> -->
+                    <!-- <span>or use your email for registration</span> -->
+                    <!-- <input type="text" placeholder="Name" /> -->
+                    <input v-model="email" type="text" placeholder="Nickname or Email" required/>
+                    <input v-model="fullName" type="text" placeholder="Fullname" required/>
+                    <input v-model="password" type="password" placeholder="Password" required/>
+                    <button class="mt-2" type="submit">Sign Up</button>
+                </form>
         
             </div>
             <div class="form-container sign-in-container">
-            <form action="#">
+            <form @submit.prevent="handleSignIn">
                 <img class="login_logo" src="../../../public/images/login.png" alt=""/>
                 <h1 class="my-3">Sign In</h1>
                 <!-- <div class="social-container">
@@ -73,10 +74,10 @@
                 <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                 </div> -->
                 <!-- <span>or use your email account</span> -->
-                <input type="email" placeholder="Nickname or Email" />
-                <input type="password" placeholder="Password" />
+                <input v-model="email" type="text" placeholder="Nickname or Email" required/>
+                <input v-model="password" type="password" placeholder="Password" required/>
                 <a href="#">Forgot your password?</a>
-                <button>Sign In</button>
+                <button type="submit">Sign In</button>
             </form>
             </div>
             <div class="overlay-container">
@@ -98,10 +99,64 @@
     </div>
 </template>
 <script setup>
+import { useRouter } from 'vue-router';
 import { ref } from 'vue'
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue3-toastify'
+import axios from 'axios'
+const baseUrl = import.meta.env.VITE_BASE_URL;
 const isSignUp = ref(true);
+const isLogin = ref(false);
+const email = ref('');
+const password = ref('');
+const fullName = ref('');
+const route = useRouter();
+let slideInterval;
+
+
+const handleSignIn = async() => {
+    if (!email.value || !password.value) {
+        // toast.error('Please enter email and password');
+        return;
+    }
+    await axios.post(`${baseUrl}/auth/login`, {
+        username: email.value,
+        password: password.value
+    })
+    .then((res) => {
+        clearInterval(slideInterval);
+        const user = res.data.userData;
+        localStorage.setItem('token', res.data.access_token);
+        localStorage.setItem('userData', JSON.stringify({
+            id: user._id,
+            username: user.username,
+            fullname: user.fullname,
+        }));
+        route.push('/home');   
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+}
+
+const handleSignUp = async() => {
+    if (!email.value || !password.value || !fullName.value) {
+        toast.error('Please enter email, password and full name');
+        return;
+    }
+    await axios.post(`${baseUrl}/auth/signup`, {
+        username: email.value,
+        password: password.value,
+        fullname: fullName.value
+    })
+    .then((res) => {
+        toast.success('Sign up successfully');
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+}
+
 
 const toggleForm = () => {
     isSignUp.value = !isSignUp.value;
@@ -111,6 +166,7 @@ let currentIndex = 0;
 const showSlide = (index) => {
   const slides = document.querySelectorAll('#customCarousel .custom-carousel-item');
   const totalSlides = slides.length;
+  if (!slides.length) return;
   if (index >= totalSlides) {
     currentIndex = 0;
     setTimeout(() => {
@@ -131,19 +187,26 @@ const showSlide = (index) => {
 
   setTimeout(() => {
     const carouselInner = document.querySelector('#customCarousel .custom-carousel-inner');
-    carouselInner.style.transition = 'transform 0.5s ease-in-out'; 
-    const offset = -100 * currentIndex;
-    carouselInner.style.transform = `translateX(${offset}%)`;
+    if(carouselInner) {
+        carouselInner.style.transition = 'transform 0.5s ease-in-out'; 
+        const offset = -100 * currentIndex;
+        carouselInner.style.transform = `translateX(${offset}%)`;
+    }
   }, 1000); 
 };
 
 onMounted(() => {
-  setInterval(() => {
-    showSlide(currentIndex + 1);
-  }, 2000);
-  showSlide(currentIndex);
+    slideInterval = setInterval(() => {
+        showSlide(currentIndex + 1);
+    }, 2000);
+    showSlide(currentIndex);
+});
+
+onUnmounted(() => {
+    clearInterval(slideInterval);
 });
 </script>
+
 <style lang="css">
 .custom-carousel {
   position: absolute;

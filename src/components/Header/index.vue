@@ -1,4 +1,5 @@
 <script setup> 
+import { RouterLink } from 'vue-router';
 import Avatar from '../../components/Avatar/index.vue'
 import { defineProps, ref, watch, defineEmits } from 'vue'
 const mode = ref(true);
@@ -20,12 +21,17 @@ const handleChangeMode = () => {
 </script>
 <template>
     <div>
-        <nav class="navbar bg-primary text-white py-3">
+        <nav class="navbar bg-primary text-white py-1">
             <div class="container-fluid">
-                <a class="navbar-brand text-white" style="font-size: 25px; font-weight: 700;"><i class="bi bi-camera2 mx-1"></i> Photosharing app</a>
+                <RouterLink to="/home" class="navbar-brand text-white" style="font-size: 25px; font-weight: 700;"><i class="bi bi-camera2 mx-1"></i> 
+                    Photosharing app
+                </RouterLink>
                 <div class="d-flex align-items-center gap-3">
                     <!-- <h5>Home</h5> -->
-                    <button type="button" class="btn btn-outline-light"><i class="bi bi-person-fill"></i> Login</button>
+                    <div type="button" class="btn btn-outline-light d-flex align-items-center gap-2">
+                        <Avatar word="C"/> Hello, Duy Chinh
+                    </div>
+
                     <div class="mode" @click="handleChangeMode">
                         <i class="bi bi-brightness-high-fill" style="font-size: 20px;" v-if="mode"></i>
                         <i class="bi bi-moon-stars-fill" style="font-size: 20px;" v-else></i>

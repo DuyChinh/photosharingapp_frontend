@@ -58,7 +58,7 @@ const handleChangeInfo = () => {
                         <p class="card-text"><i class="bi bi-telephone-fill text-black"></i> Phone: 0987654321</p>
                         <p class="card-text"><i class="bi bi-geo-alt-fill text-success"></i> Address: Hanoi, Vietnam</p>
                         <p class="card-text"><i class="bi bi-person-check-fill text-black"></i> Follow: 30</p>
-                        <button class="btn btn-primary" @click="handleChangeInfo" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-pen-fill"></i> Change my info</button>
+                        <button class="btn btn-primary mt-4" @click="handleChangeInfo" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-pen-fill"></i> Change my info</button>
                     </div>     
                 </div>
 
@@ -76,7 +76,9 @@ const handleChangeInfo = () => {
                                 <img src="https://image-processor-storage.s3.us-west-2.amazonaws.com/images/866759932dc5358cee86f6552d1250f2/inside-bubble-spheres.jpg" class="img-thumbnail" alt="...">
                             </div>
                         </div>
-                        <button class="btn btn-info text-white mt-5"><i class="bi bi-images"></i> View all library</button>
+                        <router-link to="/library">
+                            <button class="btn btn-info text-white mt-5"><i class="bi bi-images"></i> View all library</button>
+                        </router-link>
                     </div>     
                 </div>
             </div>

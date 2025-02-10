@@ -3,7 +3,22 @@ import routes from 'virtual:generated-pages'
 
 const router = createRouter({
   history: createWebHistory(),
-  routes, 
+  routes: [
+    {
+      path: '/',
+      redirect: to => {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}')
+        console.log(userData);
+        
+        if (userData?.email) {
+          return '/home'
+        }
+        return '/login'
+      },
+    },
+  
+    ...routes,
+  ], 
 })
 
 export default router
