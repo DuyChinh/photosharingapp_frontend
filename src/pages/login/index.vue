@@ -99,18 +99,19 @@
     </div>
 </template>
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ref } from 'vue'
 import { onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue3-toastify'
-import axios from 'axios'
+import axios from 'axios';
 const baseUrl = import.meta.env.VITE_BASE_URL;
 const isSignUp = ref(true);
 const isLogin = ref(false);
 const email = ref('');
 const password = ref('');
 const fullName = ref('');
-const route = useRouter();
+const router = useRouter();
+const route = useRoute();
 let slideInterval;
 
 
@@ -128,14 +129,14 @@ const handleSignIn = async() => {
         const user = res.data.userData;
         localStorage.setItem('token', res.data.access_token);
         localStorage.setItem('userData', JSON.stringify({
-            id: user._id,
+            _id: user._id,
             username: user.username,
             fullname: user.fullname,
         }));
-        route.push('/home');   
+        window.location.href = "/home";
     })
     .catch((err) => {
-        console.log(err);
+        toast.error(err.response?.data?.message);
     });
 }
 
@@ -151,9 +152,10 @@ const handleSignUp = async() => {
     })
     .then((res) => {
         toast.success('Sign up successfully');
+        isSignUp.value = !isSignUp.value;
     })
     .catch((err) => {
-        console.log(err);
+        toast.error(err.response?.data?.message);
     });
 }
 
