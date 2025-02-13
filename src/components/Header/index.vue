@@ -6,7 +6,6 @@ const mode = ref(true);
 const isMenu = ref(false);
 import { toast } from 'vue3-toastify'
 import axios from '../../plugins/axios';
-const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 const token = localStorage.getItem('token');
 const route = useRouter();
 const userData = JSON.parse(localStorage.getItem('userData'));
@@ -100,7 +99,7 @@ const logout = async() => {
                         <li class="nav-item">
                             <div class="flex_full" style="height: 35px">
                                 <Avatar :word="word" style="width: 35px; height: 35px; line-height: 35px; color: #fff;"/> 
-                                <div class="mt-3">
+                                <div class="mt-3" style="height: 35px">
                                     <p style="">{{ userData?.fullname }}</p>
                                 </div>
                             </div>

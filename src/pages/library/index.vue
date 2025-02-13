@@ -35,7 +35,7 @@
                         <label class="btn btn-danger text-white d-block mx-auto mt-3 upload-btn">
                             <i class="bi bi-cloud-upload-fill"></i>
                                 Upload Photo
-                            <input type="file" @change="handleUpload" class="file-input" hidden/>
+                            <input type="file" @change="handleUpload" class="file-input" hidden multiple/>
                         </label>
                     </div>
                     <div class="list_image_item p-2" v-for="photo in photos" :key="photo._id">
@@ -181,27 +181,54 @@ const fetchPhotos = async () => {
 watchEffect(fetchPhotos);
 
 
+// const handleUpload = async (e) => {
+//     file.value = e.target.files[0];
+//     const formData = new FormData();
+//     formData.append("file", file.value);
+//     await axios
+//     .post(`/upload`, formData, {
+//         headers: {
+//             Authorization: `Bearer ${token}`,
+//         },  
+//     })
+//     .then((res) => {
+//         toast.success(res.data.message);
+//         fetchPhotos();
+//     })
+//     .catch((e) => {
+//         toast.error("Upload failed. Please try again!");
+//     })
+//     .finally(() => {
+//     // setLoading(false);
+//     });
+// };
 const handleUpload = async (e) => {
-    file.value = e.target.files[0];
+    const files = e.target.files; 
+    if (!files.length) return;
+
     const formData = new FormData();
-    formData.append("file", file.value);
-    await axios
-    .post(`/upload`, formData, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },  
-    })
-    .then((res) => {
-        toast.success(res.data.message);
-        fetchPhotos();
-    })
-    .catch((e) => {
+    for (let file of files) {
+        formData.append("files", file);
+    }
+
+    try {
+        const res = await axios.post(`/upload`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data"
+            }
+        });
+
+        toast.success("Upload thành công!");
+        fetchPhotos(); 
+    } catch (error) {
         toast.error("Upload failed. Please try again!");
-    })
-    .finally(() => {
-    // setLoading(false);
-    });
+        console.log(error.response.data.message);
+        
+        console.error("Lỗi khi upload:", error);
+    }
 };
+
 
 const handleDelete = async (id) => {
     setImgIdDelete(id);

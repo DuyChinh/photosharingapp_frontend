@@ -7,7 +7,7 @@
               <h1 class="modal-title fs-5 text-success" id="exampleModalLabel">Post by {{ props?.user?.fullname }}</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="overflow: hidden; overflow-y: scroll;">
+            <div class="modal-body" style="overflow-y: scroll;">
               <p class="d-flex align-items-center gap-1">
                 <Avatar :word="convertWord(props?.user?.fullname)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" />
                 {{ props?.user?.fullname }}
@@ -15,14 +15,13 @@
               <p class="fw-bold fs-3">{{ photo_name }}</p>
               <p class="mb-2">{{ desc }}</p>
               <img :src="`${baseUrl}/images/${photo_url}`" class="image w-100 mb-3 rounded-1" />
-  
-              <!-- Danh sách bình luận -->
               <div class="list_comment">
                 <CommentItem v-for="comment in comments"
                              :key="comment._id"
                              :comment="comment"
                              @reply="handleReply"
-                             @like="handleLike" />
+                             @like="handleLike"
+                             @delete="handleDeleteComment" />
               </div>
             </div>
   
@@ -41,33 +40,28 @@
         </div>
       </div>
     </div>
-  </template>
+</template>
   
 <script setup>
 import { ref, defineProps, watchEffect } from 'vue';
 import Avatar from '../../components/Avatar/index.vue';
 import CommentItem from './commentItem.vue';
 import axios from '../../plugins/axios';
-import moment from 'moment';
 import { toast } from 'vue3-toastify';
-  
+
 const baseUrl = import.meta.env.VITE_BASE_URL;
 const userData = JSON.parse(localStorage.getItem('userData'));
-  
+
 const photo_name = ref("");
 const photo_url = ref("");
 const photoId = ref("");
 const desc = ref("");
 const comments = ref([]);
 const newComment = ref("");
-
+  
 const props = defineProps({
-    currentPhoto: {
-        type: Object,
-    },
-    user: {
-        type: Object,
-    }
+    currentPhoto: { type: Object },
+    user: { type: Object }
 });
   
 watchEffect(() => {
@@ -76,11 +70,13 @@ watchEffect(() => {
         photo_url.value = props.currentPhoto.img || "";
         desc.value = props.currentPhoto.description || "";
         photoId.value = props.currentPhoto._id || "";
+        getComments();
     }
 });
   
+
 const getComments = async () => {
-if (!photoId.value) return;
+    if (!photoId.value) return;
     try {
         const res = await axios.get(`/comments/${photoId.value}`);
         comments.value = res.data.data || [];
@@ -89,10 +85,8 @@ if (!photoId.value) return;
         toast.error("Lỗi khi tải bình luận!");
     }
 };
-watchEffect(() => {
-    getComments();
-});
   
+
 const addComment = async () => {
     if (!newComment.value.trim()) {
         toast.warning("Bình luận không được để trống!");
@@ -117,13 +111,13 @@ const addComment = async () => {
         toast.error("Không thể gửi bình luận!");
     } 
 };
-
+  
 const handleReply = async ({ commentId, replyText }) => {
     if (!replyText.trim()) {
         toast.warning("Phản hồi không được để trống!");
         return;
     }
-
+  
     const body = {
         user_id: userData._id,
         username: userData.username,
@@ -142,7 +136,7 @@ const handleReply = async ({ commentId, replyText }) => {
         toast.error("Không thể gửi phản hồi!");
     }
 };
-  
+
 const handleLike = async (commentId) => {
     try {
         await axios.post(`/comments/like/${commentId}`, { user_id: userData._id });
@@ -153,6 +147,17 @@ const handleLike = async (commentId) => {
     }
 };
 
+const handleDeleteComment = async (commentId) => {
+    try {
+        await axios.delete(`/comments/${commentId}`);
+        toast.success("Đã xóa bình luận!");
+        getComments();
+    } catch (e) {
+        console.error("Lỗi khi xóa bình luận:", e);
+        toast.error("Không thể xóa bình luận!");
+    }
+};
+  
 const convertWord = (word) => {
     if(word?.length > 0) {
         const arr = word?.split(" ");
@@ -162,23 +167,21 @@ const convertWord = (word) => {
     }
     return "";
 };
-  
 </script>
   
-<style scoped>
-.card_comment {
-    background-color: #f1f1f1;
-    border-radius: 20px;
-    width: 100%;                    
-}
-  
-.input_comment {
-    width: 100%;
-    border: none;
-    outline: none;
-    background-color: #f1f1f1;
-    border-radius: 20px;
-    padding: 0px 20px;
-}
+  <style scoped>
+  .card_comment {
+      background-color: #f1f1f1;
+      border-radius: 20px;
+      width: 100%;                    
+  }
+  .input_comment {
+      width: 100%;
+      border: none;
+      outline: none;
+      background-color: #f1f1f1;
+      border-radius: 20px;
+      padding: 0px 20px;
+  }
   </style>
   
