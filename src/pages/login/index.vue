@@ -133,7 +133,7 @@ const handleSignIn = async() => {
             username: user.username,
             fullname: user.fullname,
         }));
-        window.location.href = "/home";
+        router.push("/home");
     })
     .catch((err) => {
         toast.error(err.response?.data?.message);
