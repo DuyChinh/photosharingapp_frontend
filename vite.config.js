@@ -12,8 +12,4 @@ export default defineConfig({
       ]
     })
   ],
-  base: '/photosharingapp_frontend',
-  server: {
-    historyApiFallback: true
-  },
 })
