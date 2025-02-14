@@ -109,14 +109,17 @@ const searchUser = () => {
 watchEffect(searchUser)
 
 const handleFollowClick = async (user) => {   
-    // loading.value = true;
-    await axios.post(`/users/follow?followId=${user._id}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    })
+    // loading.value = true;    
+    await axios.patch(
+        `/users/follow/${user._id}`,
+        {},  // Empty body if not needed
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    )
     .then((res) => {
-        toast.success(res.data.message);
         getUsers();
     })
     .catch((e) => {
@@ -124,7 +127,8 @@ const handleFollowClick = async (user) => {
     }).finally(() => {
         // loading.value = false;
     });
-}
+};
+
 
 </script>
 <template>
@@ -141,7 +145,9 @@ const handleFollowClick = async (user) => {
                             <div class="d-flex justify-content-between align-items-center">
                                 <button class="btn btn-success btn-sm">{{ user?.follow?.length }} follower</button>
                                 <i class="bi bi-bookmark-check-fill text-warning" v-if="user._id === userData._id"></i>
-                                <span class="badge rounded-pill text-bg-danger" v-else @click.stop="handleFollowClick(user)">follow</span>
+                                <span class="badge rounded-pill text-bg-danger" v-else @click.stop="handleFollowClick(user)">
+                                    {{ user?.follow?.includes(userData._id) ? 'Following': 'Follow' }}
+                                </span>
                             </div>
                         </div>
                     </div>
