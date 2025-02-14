@@ -12,5 +12,5 @@ export default defineConfig({
       ]
     })
   ],
-  base: '/vite-plugin-pages/'
+  base: '/photosharingapp_frontend/public/'
 })
