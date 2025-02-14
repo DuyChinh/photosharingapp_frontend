@@ -20,25 +20,25 @@
         <div class="image_icon">
             <img src="../../../public/images/photos_icon.png">
         </div>
-        <div class="card guide" style="width: 16%;">
+        <div class="card guide">
             <img src="../../../public/images/shareEveryone.jpg" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Share photo</h5>
                 <p class="card-text">
                     Share photos with everyone. You can share your photos with everyone.
                 </p>
-                <button class="btn btn-primary" style="font-size: 12px">Login to explore now!</button>
+                <button class="btn btn-primary btn-explore" style="font-size: 12px">Login to explore now!</button>
             </div>
         </div>
 
-        <div class="card guide_2" style="width: 16%;">
+        <div class="card guide_2">
             <img src="../../../public/images/comment.jpg" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Comment photo</h5>
                 <p class="card-text">
                     Comment photos with everyone. You can comment your photos with everyone.
                 </p>
-                <button class="btn btn-primary" style="font-size: 12px">Login to explore now!</button>
+                <button class="btn btn-primary btn-explore" style="font-size: 12px">Login to explore now!</button>
             </div>
         </div>
 
@@ -60,7 +60,14 @@
                     <input v-model="email" type="text" placeholder="Nickname or Email" required/>
                     <input v-model="fullName" type="text" placeholder="Fullname" required/>
                     <input v-model="password" type="password" placeholder="Password" required/>
-                    <button class="mt-2" type="submit">Sign Up</button>
+                    <button class="mt-2" type="submit" v-if="!loading">
+                        Sign Up
+                     </button>
+                    <button class="mt-2" type="submit" v-else>
+                        <LoadingBtn style="width: 35px; border-color: #fff #0000"/>
+                     </button>
+                    <button class="btn-sm-show mt-2" @click="toggleForm">Sign In</button>
+
                 </form>
         
             </div>
@@ -77,7 +84,14 @@
                 <input v-model="email" type="text" placeholder="Nickname or Email" required/>
                 <input v-model="password" type="password" placeholder="Password" required/>
                 <a href="#">Forgot your password?</a>
-                <button type="submit">Sign In</button>
+                <button class="mt-2" type="submit" v-if="!loading">
+                        Sign In
+                </button>
+                <button class="mt-2" type="submit" v-else>
+                    <LoadingBtn style="width: 35px; border-color: #fff #0000"/>
+                </button>
+                <button class="btn-sm-show mt-2" @click="toggleForm">Sign Up</button>
+
             </form>
             </div>
             <div class="overlay-container">
@@ -103,6 +117,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { ref } from 'vue'
 import { onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue3-toastify'
+import LoadingBtn from '../../components/LoadingBtn/index.vue';
 import axios from 'axios';
 const baseUrl = import.meta.env.VITE_BASE_URL;
 const isSignUp = ref(true);
@@ -112,10 +127,12 @@ const password = ref('');
 const fullName = ref('');
 const router = useRouter();
 const route = useRoute();
+const loading = ref(false);
 let slideInterval;
 
 
 const handleSignIn = async() => {
+    loading.value = true;
     if (!email.value || !password.value) {
         // toast.error('Please enter email and password');
         return;
@@ -137,10 +154,14 @@ const handleSignIn = async() => {
     })
     .catch((err) => {
         toast.error(err.response?.data?.message);
+    })
+    .finally(() => {
+        loading.value = false;
     });
 }
 
 const handleSignUp = async() => {
+    loading.value = true;
     if (!email.value || !password.value || !fullName.value) {
         toast.error('Please enter email, password and full name');
         return;
@@ -156,6 +177,9 @@ const handleSignUp = async() => {
     })
     .catch((err) => {
         toast.error(err.response?.data?.message);
+    })
+    .finally(() => {
+        loading.value = false;
     });
 }
 
@@ -213,8 +237,8 @@ onUnmounted(() => {
 .custom-carousel {
   position: absolute;
   width: 18%;
-  right: 5%;
-  top: 10%;
+  top: 1%;
+  right: 1%;
   overflow: hidden;
   border-radius: 10px;
 }
@@ -236,7 +260,10 @@ onUnmounted(() => {
 
 .block {
     position: relative;
-    min-height: 100vh;
+    /* max-height: 100vh; */
+    height: 100vh;
+    top: 0;
+    left: 0;
     background-color: #f1f7f9;
     background: url("../../../public/images/family02.jpg") no-repeat center center fixed;
     background-size: cover;
@@ -251,19 +278,22 @@ onUnmounted(() => {
 
 .guide {
     position: absolute;
-    top: 15%;
-    left: 2%;
+    top: 1%;
+    left: 1%;
+    width: 16%;
 }
 
 .guide_2 {
     position: absolute;
-    top: 50%;
-    right: 2%;
+    bottom: 1%;
+    right: 1%;
+    width: 16%;
 }
 
 .title_block {
     margin: 0 auto;
-    width: 30%;
+    width: fit-content;
+    text-align: center;
     background: #fff;
     padding: 10px 20px;
     opacity: 0.8;
@@ -275,7 +305,7 @@ onUnmounted(() => {
     width: 22%;
     position: absolute;
     right: 2%;
-    top: 10%;
+    top: 16%;
 }
 
 .image_icon {
@@ -512,5 +542,171 @@ input {
 #info {
   margin-top: 1rem;
   text-align: center; 
+}
+
+.btn-explore {
+    display: none;
+}
+
+.btn-sm-show {
+    background: #f64f59;
+    display: none;
+}
+
+@media screen and (max-width: 250px) {
+    .custom-carousel {
+        display: none;
+    }
+    .guide, .guide_2 {
+        display: none;
+    }
+
+    .image_icon {
+        display: none;
+    }
+
+    .title {
+        font-size: 14px;
+    }
+
+    .container.right-panel-active .sign-in-container {
+        transform: translateX(100%);
+    }
+
+    .container.right-panel-active .sign-up-container {
+        transform: translateX(0);
+        opacity: 1;
+        z-index: 5;
+        animation: show 0.6s;
+    }
+
+    .btn-sm-show {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 250px) and (max-width: 420px) {
+    .custom-carousel {
+        display: none;
+    }
+    .guide, .guide_2 {
+        display: none;
+    }
+
+    .image_icon {
+        display: none;
+    }
+
+    .sign-up-container, .sign-in-container {
+        width: 100%;
+    }
+
+    .overlay-container {
+        display: none;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .container.right-panel-active .sign-in-container {
+        transform: translateX(100%);
+    }
+
+    .container.right-panel-active .sign-up-container {
+        transform: translateX(0);
+        opacity: 1;
+        z-index: 5;
+        animation: show 0.6s;
+    }
+
+    .btn-sm-show {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 420px) and (max-width: 576px) {
+    .custom-carousel {
+        display: none;
+    }
+    .guide, .guide_2 {
+        display: none;
+    }
+
+    .image_icon {
+        display: none;
+    }
+
+    .sign-up-container, .sign-in-container {
+        width: 100%;
+    }
+
+    .overlay-container {
+        display: none;
+    }
+
+    .title {
+        font-size: 30px;
+    }
+
+    .container.right-panel-active .sign-in-container {
+        transform: translateX(100%);
+    }
+
+    .container.right-panel-active .sign-up-container {
+        transform: translateX(0);
+        opacity: 1;
+        z-index: 5;
+        animation: show 0.6s;
+    }
+
+    .btn-sm-show {
+        display: block;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 792px) {
+    .guide, .guide_2 {
+        display: none;
+    }
+
+    .image_icon {
+        display: none;
+    }
+
+    .custom-carousel {
+        display: none;
+    }    
+}
+
+@media screen and (min-width: 792px) and (max-width: 992px) {
+    .guide h5, .guide_2 h5 {
+        font-size: 16px;
+    }
+    .guide p, .guide_2 p {
+        display: none;
+    }
+
+    .image_icon {
+        display: none;
+    }
+}
+
+
+@media screen and (min-width: 992px) and (max-width: 1200px) {
+    #container {
+        width: 64%;
+    }
+
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1400px) {
+    
+}
+
+@media screen and (min-width: 1500px) {
+    .btn-explore {
+        display: block;
+    }
 }
 </style>

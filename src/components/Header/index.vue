@@ -6,10 +6,13 @@ const mode = ref(true);
 const isMenu = ref(false);
 import { toast } from 'vue3-toastify'
 import axios from '../../plugins/axios';
+import LoadingBtn from '../../components/LoadingBtn/index.vue'
 const token = localStorage.getItem('token');
 const route = useRouter();
 const userData = JSON.parse(localStorage.getItem('userData'));
 const word = userData?.fullname.split(" ")[userData?.fullname.split(" ").length - 1][0];
+const loading = ref(false);
+
 
 if (localStorage.getItem('mode')) {
     mode.value = localStorage.getItem('mode') === 'light' ? true : false;
@@ -46,7 +49,8 @@ onUnmounted(() => {
 });
 
 const logout = async() => {
-    // setLoading(true);
+    loading.value = true;
+    showMenu();
     const body = {
         msg: "inactive",
     };
@@ -65,7 +69,7 @@ const logout = async() => {
         toast.error(e.response?.data?.message);
     })
     .finally(() => {
-        // setLoading(false);
+        loading.value = false;
     });
 };
 
@@ -85,8 +89,12 @@ const logout = async() => {
                         <i class="bi bi-moon-stars-fill" style="font-size: 20px;" v-else></i>
                     </div> 
 
-                    <button class="btn_avatar" style="background: transparent; border: none; color: #fff;">
+                    <button class="btn_avatar" style="background: transparent; border: none; color: #fff;" v-if="!loading">
                         <Avatar :word="word" style="width: 35px; height: 35px; line-height: 35px;" @click="showMenu"/> 
+                    </button>
+
+                    <button class="btn_nav_item" v-else>
+                        <LoadingBtn style="width: 32px; border-color: #fff #0000;"/>
                     </button>
 
 
@@ -145,7 +153,7 @@ const logout = async() => {
     position: absolute;
     right: 10px;
     top: 80%;
-    z-index: 1;
+    z-index: 10;
     background: #fff;
 }
 

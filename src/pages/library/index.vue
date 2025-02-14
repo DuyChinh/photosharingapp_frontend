@@ -219,6 +219,7 @@ watchEffect(fetchPhotos);
 //     });
 // };
 const handleUpload = async (e) => {
+    loading.value = true;
     const files = e.target.files; 
     if (!files.length) return;
 
@@ -239,10 +240,11 @@ const handleUpload = async (e) => {
         fetchPhotos(); 
     } catch (error) {
         toast.error("Upload failed. Please try again!");
-        console.log(error.response.data.message);
+        // console.log(error.response.data.message);
         
-        console.error("Lỗi khi upload:", error);
+        // console.error("Lỗi khi upload:", error);
     }
+    loading.value = false;
 };
 
 

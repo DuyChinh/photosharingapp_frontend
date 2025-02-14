@@ -7,6 +7,7 @@ import axios from '../../plugins/axios';
 import moment from 'moment';
 import { toast } from 'vue3-toastify'
 import { RouterLink } from 'vue-router';
+import LoadingBtn from '../../components/LoadingBtn/index.vue';
 const isChangeInfo = ref(false);
 const loading = ref(false);
 const userData = JSON.parse(localStorage.getItem('userData'));
@@ -35,7 +36,8 @@ const getUser = async() => {
         loading.value = false;
     });
 };
-watchEffect(getUser);
+// watchEffect(getUser);
+getUser();
 
 const getUsers = async() => {
     loading.value = true;
@@ -81,12 +83,13 @@ const fetchPhotos = async () => {
     }).then(() => {
         loading.value = false;
     });
-    // setLoading(false);
 };
 watchEffect(fetchPhotos);
 
-const changeCurrentUser = (user) => {
-    currentUser.value = user;
+const changeCurrentUser = (u) => {
+    currentUser.value = u;
+    photos.value = [];
+    user.value = users.value.find((item) => item._id === u._id);
 }
 
 const handleChangeInfo = () => {
@@ -109,7 +112,13 @@ const searchUser = () => {
 watchEffect(searchUser)
 
 const handleFollowClick = async (user) => {   
-    // loading.value = true;    
+    // loading.value = true;
+    users.value = users.value.map((item) => {
+        if(item._id === user._id) {
+            item.follow = item.follow.includes(userData._id) ? item.follow.filter((id) => id !== userData._id): [...item.follow, userData._id];
+        }
+        return item;
+    });
     await axios.patch(
         `/users/follow/${user._id}`,
         {},  // Empty body if not needed
@@ -120,10 +129,10 @@ const handleFollowClick = async (user) => {
         }
     )
     .then((res) => {
-        getUsers();
+        // getUsers();
     })
     .catch((e) => {
-        toast.error(e.response?.data?.message);
+        // toast.error(e.response?.data?.message);
     }).finally(() => {
         // loading.value = false;
     });
@@ -137,16 +146,16 @@ const handleFollowClick = async (user) => {
         <div class="">
             <div class="row gap-3 flex-nowrap">
                 <div class="col-md-3">
+                    <input type="text" class="form-control mb-2" placeholder="Search user" aria-label="Search user" aria-describedby="button-addon2" v-model="searchWord"/>
                     <div class="list-group" style="max-height:calc(100vh - 100px); overflow-y:scroll;">
-                        <input type="text" class="form-control mb-2" placeholder="Search user" aria-label="Search user" aria-describedby="button-addon2" v-model="searchWord"/>
-                        <div class="list-group-item list-group-item-action" :class="currentUser._id === user._id ? 'active': ''" aria-current="true" @click="changeCurrentUser(user)" style="cursor: pointer;"  v-for="user in users" :key="user.id">
-                            <h5 class="mb-1">{{ user.fullname }}</h5>
-                            <p class="mb-1">@{{ user.username }}</p>
+                        <div class="list-group-item list-group-item-action" :class="u._id === user._id ? 'active': ''" aria-current="true" @click="changeCurrentUser(u)" style="cursor: pointer;"  v-for="u in users" :key="u.id">
+                            <h5 class="mb-1">{{ u.fullname }}</h5>
+                            <p class="mb-1">@{{ u.username }}</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <button class="btn btn-success btn-sm">{{ user?.follow?.length }} follower</button>
-                                <i class="bi bi-bookmark-check-fill text-warning" v-if="user._id === userData._id"></i>
-                                <span class="badge rounded-pill text-bg-danger" v-else @click.stop="handleFollowClick(user)">
-                                    {{ user?.follow?.includes(userData._id) ? 'Following': 'Follow' }}
+                                <button class="btn btn-success btn-sm">{{ u?.follow?.length }} follower</button>
+                                <i class="bi bi-bookmark-check-fill text-warning" v-if="u._id === userData._id"></i>
+                                <span class="badge rounded-pill text-bg-danger" v-else @click.stop="handleFollowClick(u)">
+                                    {{ u?.follow?.includes(userData._id) ? 'Following': 'Follow' }}
                                 </span>
                             </div>
                         </div>
@@ -162,18 +171,22 @@ const handleFollowClick = async (user) => {
                         <p class="card-text" v-else>
                             <i class="bi bi-envelope-at-fill text-warning"></i> Username: {{ user?.username }}
                         </p>
-                        <p class="card-text"><i class="bi bi-person-fill-lock text-primary"></i> Full name:{{ user?.fullname }}</p>
+                        <p class="card-text"><i class="bi bi-person-fill-lock text-primary"></i> Full name: {{ user?.fullname }}</p>
                         <p class="card-text"><i class="bi bi-calendar2-week-fill text-info"></i> Birthday: {{ user?.dob ? moment(user.dob).format("DD/MM/YYYY"): "Not available" }}</p>
                         <p class="card-text"><i class="bi bi-telephone-fill text-black"></i> Phone: {{ user?.phone ? user.phone: "Not available" }}</p>
                         <p class="card-text"><i class="bi bi-geo-alt-fill text-success"></i> Address: {{ user?.address ? user.address: "Not avaiable" }}</p>
                         <p class="card-text"><i class="bi bi-person-check-fill text-black"></i> Follow: {{ user?.follow?.length }}</p>
                         <button class="btn btn-primary mt-4" @click="handleChangeInfo" data-bs-toggle="modal" data-bs-target="#exampleModal" v-if="user?._id == userData._id"><i class="bi bi-pen-fill"></i> Change my info</button>
                     </div>     
+
                 </div>
 
                 <div class="card col-md-4 library">
                     <div class="card-body">
-                        <h5 class="card-title d-flex justify-content-between aligns-item-center">Library</h5>
+                        <div class="d-flex aligns-item-center gap-3">
+                            <h5 class="card-title d-flex aligns-item-center">Library</h5>
+                            <LoadingBtn v-if="loading"  style="width: 30px;"/>
+                        </div>
                         <div class="d-flex align-items-center flex-direction-row mt-3 flex-wrap" v-if="photos.length > 0" style="width: 100%; gap: 20px;">
                             <div class="img_item" v-for="photo in photos" :key="photo._id">
                                 <RouterLink :to="{
@@ -198,7 +211,7 @@ const handleFollowClick = async (user) => {
                                 user_id: currentUser._id,
                             },
                         }">
-                            <button class="btn btn-info text-white mt-5"><i class="bi bi-images"></i> View all library</button>
+                            <button class="btn btn-primary text-white mt-5"><i class="bi bi-images"></i> View all library</button>
                         </router-link>
                     </div>     
                 </div>
