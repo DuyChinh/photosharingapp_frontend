@@ -701,7 +701,9 @@ input {
 }
 
 @media screen and (min-width: 1200px) and (max-width: 1400px) {
-    
+    /* .btn-explore {
+        display: block;
+    } */
 }
 
 @media screen and (min-width: 1500px) {

@@ -361,4 +361,38 @@ p {
 .img_setting p:hover {
     background: rgba(0, 0, 0, 0.8);
 }
+
+@media screen and (max-width: 250px) {
+    
+}
+
+@media screen and (min-width: 250px) and (max-width: 420px) {
+    
+}
+
+@media screen and (min-width: 420px) and (max-width: 576px) {
+    
+}
+
+@media screen and (min-width: 576px) and (max-width: 792px) {
+      
+}
+
+@media screen and (min-width: 792px) and (max-width: 992px) {
+    
+}
+
+
+@media screen and (min-width: 992px) and (max-width: 1200px) {
+   
+
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1400px) {
+    
+}
+
+@media screen and (min-width: 1500px) {
+    
+}
 </style>

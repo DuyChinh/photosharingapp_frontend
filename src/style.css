@@ -32,18 +32,18 @@ body.dark {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  border-radius: 5px;
-  /* Kích thước thanh cuộn ngang */
+    width: 2px;
+    border-radius: 5px;
+    /* Kích thước thanh cuộn ngang */
 }
 
 ::-webkit-scrollbar-track {
-  background-color: transparent;
-  /* Màu nền của thanh cuộn */
+    background-color: #333;
+    /* Màu nền của thanh cuộn */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: transparent;
-  border-radius: 3px;
-  /* Màu của thanh cuộn */
+    background-color: #ccc;
+    border-radius: 5px;
+    /* Màu của thanh cuộn */
 }

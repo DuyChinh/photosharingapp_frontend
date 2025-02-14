@@ -144,10 +144,10 @@ const handleFollowClick = async (user) => {
     <div>
         <Header class="mb-2"/>
         <div class="">
-            <div class="row gap-3 flex-nowrap">
+            <div class="row gap-3 flex-wrap">
                 <div class="col-md-3">
                     <input type="text" class="form-control mb-2" placeholder="Search user" aria-label="Search user" aria-describedby="button-addon2" v-model="searchWord"/>
-                    <div class="list-group" style="max-height:calc(100vh - 100px); overflow-y:scroll;">
+                    <div class="list-group lsg_user">
                         <div class="list-group-item list-group-item-action" :class="u._id === user._id ? 'active': ''" aria-current="true" @click="changeCurrentUser(u)" style="cursor: pointer;"  v-for="u in users" :key="u.id">
                             <h5 class="mb-1">{{ u.fullname }}</h5>
                             <p class="mb-1">@{{ u.username }}</p>
@@ -181,13 +181,13 @@ const handleFollowClick = async (user) => {
 
                 </div>
 
-                <div class="card col-md-4 library">
+                <div class="card col-md-4 library p-0">
                     <div class="card-body">
                         <div class="d-flex aligns-item-center gap-3">
                             <h5 class="card-title d-flex aligns-item-center">Library</h5>
                             <LoadingBtn v-if="loading"  style="width: 30px;"/>
                         </div>
-                        <div class="d-flex align-items-center flex-direction-row mt-3 flex-wrap" v-if="photos.length > 0" style="width: 100%; gap: 20px;">
+                        <div class="d-flex align-items-center flex-direction-row mt-3 flex-wrap lsg_photo" v-if="photos.length > 0" style="width: 100%; gap: 20px;">
                             <div class="img_item" v-for="photo in photos" :key="photo._id">
                                 <RouterLink :to="{
                                     path: `/photo`,
@@ -230,6 +230,12 @@ const handleFollowClick = async (user) => {
     width: calc(50% - 20px);
 }
 
+.lsg_user, .lsg_photo {
+    width: 100%;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
 .img_item img {
     border-radius: 5px;
     width: 100%;
@@ -253,5 +259,59 @@ const handleFollowClick = async (user) => {
     background: #0cebeb;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #29ffc6, #20e3b2, #0cebeb);  /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to right, #29ffc6, #20e3b2, #0cebeb); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+@media screen and (max-width: 250px) {
+    .lsg_user {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .lsg_photo {
+        max-height: 350px;
+        overflow-y: auto;
+    }
+}
+
+@media screen and (min-width: 250px) and (max-width: 420px) {
+    .lsg_user {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .lsg_photo {
+        max-height: 350px;
+        overflow-y: auto;
+    }
+}
+
+@media screen and (min-width: 420px) and (max-width: 576px) {
+    .lsg_user {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .lsg_photo {
+        max-height: 350px;
+        overflow-y: auto;
+    }
+}
+
+@media screen and (min-width: 792px) and (max-width: 992px) {
+    
+}
+
+
+@media screen and (min-width: 992px) and (max-width: 1200px) {
+   
+
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1400px) {
+    
+}
+
+@media screen and (min-width: 1500px) {
+    
 }
 </style>
