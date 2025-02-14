@@ -98,7 +98,7 @@ const convertWord = (word) => {
 };
 </script>
 
-<style scoped>
+<style lang="css" scoped>
 .comment {
     padding: 10px 0;
     border-bottom: 1px solid #ddd;

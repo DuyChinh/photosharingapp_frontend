@@ -209,7 +209,7 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .custom-carousel {
   position: absolute;
   width: 18%;

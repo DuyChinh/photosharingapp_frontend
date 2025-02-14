@@ -15,7 +15,9 @@ const token = localStorage.getItem('token');
 const currentUser = ref(userData);
 const user = ref();
 const users = ref([]);
+const root_users = ref([]);
 const photos = ref([]);
+const searchWord = ref('');
 
 const getUser = async() => {
     loading.value = true;
@@ -51,6 +53,7 @@ const getUsers = async() => {
             return item._id !== userData._id;
         });
         users.value = [userFirst, ...listUser];
+        root_users.value = users.value;
     })
     .catch((e) => {
         toast.error(e.response?.data?.message);
@@ -90,6 +93,39 @@ const handleChangeInfo = () => {
     isChangeInfo.value = true;
 }
 
+const removeDiacritics = (str) => {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+
+const searchUser = () => {
+    if(!searchWord.value) {
+        users.value = root_users.value;
+    } else {
+        users.value = root_users.value.filter((user) => {
+            return removeDiacritics(user.fullname.toLowerCase()).includes(removeDiacritics(searchWord.value.toLowerCase()));
+        });
+    }
+}
+watchEffect(searchUser)
+
+const handleFollowClick = async (user) => {   
+    // loading.value = true;
+    await axios.post(`/users/follow?followId=${user._id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    .then((res) => {
+        toast.success(res.data.message);
+        getUsers();
+    })
+    .catch((e) => {
+        toast.error(e.response?.data?.message);
+    }).finally(() => {
+        // loading.value = false;
+    });
+}
+
 </script>
 <template>
     <div>
@@ -97,13 +133,15 @@ const handleChangeInfo = () => {
         <div class="">
             <div class="row gap-3 flex-nowrap">
                 <div class="col-md-3">
-                    <div class="list-group" style="max-height:calc(100vh - 100px); overflow-y:scroll;" v-for="user in users" :key="user.id">
-                        <div class="list-group-item list-group-item-action" :class="currentUser._id === user._id ? 'active': ''" aria-current="true" @click="changeCurrentUser(user)" style="cursor: pointer;">
+                    <div class="list-group" style="max-height:calc(100vh - 100px); overflow-y:scroll;">
+                        <input type="text" class="form-control mb-2" placeholder="Search user" aria-label="Search user" aria-describedby="button-addon2" v-model="searchWord"/>
+                        <div class="list-group-item list-group-item-action" :class="currentUser._id === user._id ? 'active': ''" aria-current="true" @click="changeCurrentUser(user)" style="cursor: pointer;"  v-for="user in users" :key="user.id">
                             <h5 class="mb-1">{{ user.fullname }}</h5>
                             <p class="mb-1">@{{ user.username }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <button class="btn btn-success btn-sm">{{ user?.follow?.length }} follower</button>
                                 <i class="bi bi-bookmark-check-fill text-warning" v-if="user._id === userData._id"></i>
+                                <span class="badge rounded-pill text-bg-danger" v-else @click.stop="handleFollowClick(user)">follow</span>
                             </div>
                         </div>
                     </div>
@@ -142,12 +180,6 @@ const handleChangeInfo = () => {
                                 </RouterLink>
                                 <!-- <img :src="`${baseUrl}/images/${photo.img}`" class="" alt="..."> -->
                             </div>
-                            <!-- <div class="col-6">
-                                <img src="https://th.bing.com/th/id/OIG2.9O4YqGf98tiYzjKDvg7L" class="img-thumbnail" alt="...">
-                            </div>
-                            <div class="col-6 mt-3">
-                                <img src="https://image-processor-storage.s3.us-west-2.amazonaws.com/images/866759932dc5358cee86f6552d1250f2/inside-bubble-spheres.jpg" class="img-thumbnail" alt="...">
-                            </div> -->
                         </div>
                         <div v-else class="no-image text-center text-black">
                             <i class="bi bi-image text-black" style="font-size: 2rem;"></i>
@@ -174,7 +206,7 @@ const handleChangeInfo = () => {
     </div>
 </template>
 
-<style lang="css">
+<style lang="css" scoped>
 .img_item {
     width: calc(50% - 20px);
 }

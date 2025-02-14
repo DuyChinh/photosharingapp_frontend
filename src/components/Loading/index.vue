@@ -28,7 +28,7 @@
     </svg>
 </template>
 
-<style scoped>
+<style lang="css" scoped>
 
 @keyframes spin {
     from {

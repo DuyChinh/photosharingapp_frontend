@@ -38,6 +38,22 @@
                             <input type="file" @change="handleUpload" class="file-input" hidden multiple/>
                         </label>
                     </div>
+                    <div class="card list_image_item" aria-hidden="true" v-if="loading">
+                        <img src="https://cdn.dribbble.com/userupload/22142955/file/original-0c62063ff813ff78dc7dcdfc0d23256e.gif" class="card-img-top image w-100" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title placeholder-glow">
+                            <span class="placeholder col-6"></span>
+                            </h5>
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-7"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-6"></span>
+                                <span class="placeholder col-8"></span>
+                            </p>
+                            <a class="btn btn-primary disabled placeholder col-6 mt-2" aria-disabled="true"></a>
+                        </div>
+                    </div>
                     <div class="list_image_item p-2" v-for="photo in photos" :key="photo._id">
                         <RouterLink :to="{
                             path: `/photo`,
@@ -106,6 +122,7 @@ import Comment from '../../components/Comment/index.vue';
 // import Comment2 from '../../components/Comment2/index.vue';
 import DeleteModal from '../../views/Library/DeleteModal.vue'
 import EditPhoto from '../../views/Library/EditPhoto.vue';
+import Loading from '../../components/Loading/index.vue';
 import moment from 'moment';
 import ChangeShareStatus from '../../views/Library/ChangeShareStatus.vue';
 import { useRoute, RouterLink } from 'vue-router';
@@ -176,7 +193,6 @@ const fetchPhotos = async () => {
     }).then(() => {
         loading.value = false;
     });
-    // setLoading(false);
 };
 watchEffect(fetchPhotos);
 
@@ -262,7 +278,7 @@ const isPhotoLoved = (photo) => {
 };
 
 </script>
-<style lang="css">
+<style lang="css" scoped>
 .img_container {
    height: calc(100vh - 100px);
    overflow: hidden;

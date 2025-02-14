@@ -132,8 +132,8 @@ const handleReply = async ({ commentId, replyText }) => {
         await axios.post(`/comments`, body);
         getComments();
     } catch (e) {
-        console.error("Lỗi khi gửi phản hồi:", e);
-        toast.error("Không thể gửi phản hồi!");
+        // console.error("Lỗi khi gửi phản hồi:", e);
+        // toast.error("Không thể gửi phản hồi!");
     }
 };
 
@@ -142,19 +142,19 @@ const handleLike = async (commentId) => {
         await axios.post(`/comments/like/${commentId}`, { user_id: userData._id });
         getComments();
     } catch (e) {
-        console.error("Lỗi khi like bình luận:", e);
-        toast.error("Không thể like bình luận!");
+        // console.error("Lỗi khi like bình luận:", e);
+        // toast.error("Không thể like bình luận!");
     }
 };
 
 const handleDeleteComment = async (commentId) => {
     try {
         await axios.delete(`/comments/${commentId}`);
-        toast.success("Đã xóa bình luận!");
+        // toast.success("Đã xóa bình luận!");
         getComments();
     } catch (e) {
-        console.error("Lỗi khi xóa bình luận:", e);
-        toast.error("Không thể xóa bình luận!");
+        // console.error("Lỗi khi xóa bình luận:", e);
+        // toast.error("Không thể xóa bình luận!");
     }
 };
   
@@ -169,19 +169,19 @@ const convertWord = (word) => {
 };
 </script>
   
-  <style scoped>
-  .card_comment {
-      background-color: #f1f1f1;
-      border-radius: 20px;
-      width: 100%;                    
-  }
-  .input_comment {
-      width: 100%;
-      border: none;
-      outline: none;
-      background-color: #f1f1f1;
-      border-radius: 20px;
-      padding: 0px 20px;
-  }
-  </style>
+<style lang="css" scoped>
+.card_comment {
+    background-color: #f1f1f1;
+    border-radius: 20px;
+    width: 100%;                    
+}
+.input_comment {
+    width: 100%;
+    border: none;
+    outline: none;
+    background-color: #f1f1f1;
+    border-radius: 20px;
+    padding: 0px 20px;
+}
+</style>
   

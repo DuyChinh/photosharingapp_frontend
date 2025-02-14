@@ -131,7 +131,7 @@ const logout = async() => {
     
 </template>
 
-<style lang="css">
+<style lang="css" scoped>
 .mode {
     cursor: pointer;
 }

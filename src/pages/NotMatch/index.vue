@@ -9,7 +9,7 @@
 <script setup>
 </script>
   
-<style lanf="css">
+<style lanf="css" scoped>
   .not-found {
     text-align: center;
     margin-top: 50px;

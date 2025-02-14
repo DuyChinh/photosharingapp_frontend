@@ -58,7 +58,7 @@ const fetchPhoto = async () => {
 watchEffect(fetchPhoto);
 
 </script>
-<style lang="css">
+<style lang="css" scoped>
 .photo_container {
     position: relative;
     padding: 20px;
