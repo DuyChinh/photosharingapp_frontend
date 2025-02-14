@@ -12,5 +12,5 @@ export default defineConfig({
       ]
     })
   ],
-  base: '/photosharingapp_frontend/public/'
+  // base: '/photosharingapp_frontend'
 })
