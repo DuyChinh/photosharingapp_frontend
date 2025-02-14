@@ -14,11 +14,11 @@ const router = createRouter({
         return '/login'
       },
     },
-    // {
-    //   path: '/home',
-    //   name: 'Home',
-    //   component: () => import('../pages/Home/index.vue'),
-    // },
+    {
+      path: '/home',
+      name: 'Home',
+      component: () => import('../pages/Home/index.vue'),
+    },
   
     ...routes,
     {
