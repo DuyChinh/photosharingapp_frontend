@@ -78,8 +78,8 @@ watchEffect(fetchPhoto);
 
 .photo_container img {
     margin-top: 20px;
-    max-width: 75vh;
-    width: 80%;
+    max-height: 75vh;
+    width: 90%;
     border-radius: 5px;
     object-fit: cover;
 }
