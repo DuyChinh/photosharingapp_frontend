@@ -51,7 +51,7 @@ const handleChangeShareStatus = async() => {
     }); 
     emit('photos', changePhotos);
     await axios.patch(`/photos/share_status/${props.photoId}`, {
-        share_status: props.shareStatus === 'private' ? 'public' : 'private',
+        share_status: props.shareStatus,
     }, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
