@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5 text-danger" id="shareStatusLabel">
-                        <i class="fas fa-exclamation-triangle text-danger"></i> Delete Photo
+                        <i class="fas fa-exclamation-triangle text-danger"></i>Change Share Status Photo
                     </h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -21,11 +21,14 @@
     </div>
 </template>
 <script setup>
-import { ref, watch, defineProps, watchEffect } from 'vue';
+import { ref, watch, defineProps, watchEffect, defineEmits } from 'vue';
 import { toast } from 'vue3-toastify';
 import axios from '../../plugins/axios';
 const token = localStorage.getItem('token');
 const props = defineProps({
+    photos: {
+        type: Array,
+    },
     photoId: {
         type: String,
     },
@@ -37,7 +40,16 @@ const props = defineProps({
     }
 });
 
+const emit = defineEmits(['photos']);
+
 const handleChangeShareStatus = async() => {
+    const changePhotos =  await props.photos.map((photo) => {
+        if (photo._id === props.photoId) {
+            photo.share_status = photo.share_status === 'private' ? 'public' : 'private';
+        }
+        return photo;
+    }); 
+    emit('photos', changePhotos);
     await axios.patch(`/photos/share_status/${props.photoId}`, {
         share_status: props.shareStatus === 'private' ? 'public' : 'private',
     }, {
@@ -46,11 +58,11 @@ const handleChangeShareStatus = async() => {
         },
     })
     .then((res) => {
-        toast.success(res.data.message);
-        props.fetchPhotos();
+        // toast.success(res.data.message);
+        // props.fetchPhotos();
     })
     .catch((e) => {
-        toast.error(e.response?.data?.message);
+        // toast.error(e.response?.data?.message);
     });
 }
 

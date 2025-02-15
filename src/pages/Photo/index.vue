@@ -4,7 +4,7 @@
             <i class="bi bi-house-fill"></i> Home
         </RouterLink>
 
-        <RouterLink to="/library" class="btn_exit text-white">
+        <RouterLink :to="`/library?user_id=${userData?._id}`" class="btn_exit text-white">
             <i class="bi bi-x-circle-fill" style="font-size: 30px;"></i>
         </RouterLink>
         <div class="img_container">
@@ -27,6 +27,7 @@ import Avatar from '../../components/Avatar/index.vue';
 import { toast } from 'vue3-toastify';
 const route = useRoute();
 const token = localStorage.getItem('token');
+const userData = JSON.parse(localStorage.getItem('userData'));
 const baseUrl = import.meta.env.VITE_BASE_URL;
 const photo_id = route.query.id;
 const word = ref('');
@@ -62,13 +63,11 @@ watchEffect(fetchPhoto);
 .photo_container {
     position: relative;
     padding: 20px;
-    /* display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column; */
     height: 100vh;
     background-color: #333;
     color: #fff;
+    overflow: hidden;
+    overflow-y: auto;
 }
 
 .img_container {
@@ -78,12 +77,16 @@ watchEffect(fetchPhoto);
 }
 
 .photo_container img {
-    max-width: 80%;
+    margin-top: 20px;
+    max-width: 75vh;
     border-radius: 5px;
     object-fit: cover;
 }
 
 .info_container {
+    /* width: 30%; */
+    /* text-align: center; */
+    margin: 0 auto;
     /* width: 100%; */
     /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
 }

@@ -79,7 +79,8 @@ const logout = async() => {
     <div>
         <nav class="navbar navbar-container bg-primary text-white py-3">
             <div class="container-fluid">
-                <RouterLink to="/home" class="navbar-brand text-white" style="font-size: 25px; font-weight: 700;"><i class="bi bi-camera2 mx-1"></i> 
+                <RouterLink to="/home" class="navbar-brand text-white">
+                    <i class="bi bi-camera2 mx-1"></i> 
                     Photosharing app
                 </RouterLink>
                 <div class="d-flex align-items-center gap-3">
@@ -166,4 +167,40 @@ const logout = async() => {
     border: none;
     cursor: pointer;
 }
+
+.navbar-brand {
+    display: inline-block;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+@media screen and (max-width: 250px) {
+    .navbar-brand {
+        display: inline-block;
+        font-size: 15px;
+    }
+}
+
+@media screen and (min-width: 250px) and (max-width: 420px) {
+    .navbar-brand {
+    display: inline-block;
+    font-size: 18px;
+  }
+}
+
+@media screen and (min-width: 420px) and (max-width: 577px) {   
+  .navbar-brand {
+    display: inline-block;
+    font-size: 20px;
+  }
+}
+
+@media screen and (min-width: 576px) and (max-width: 768px) {
+    .navbar-brand {
+        display: inline-block;
+        font-size: 22px;
+    }   
+}
+
+
 </style>

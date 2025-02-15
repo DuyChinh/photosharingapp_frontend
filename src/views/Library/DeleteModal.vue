@@ -1,4 +1,4 @@
-<template lang="">
+<template>
     <div class="modal fade" id="deleteModal" aria-hidden="true" aria-labelledby="deleteModalLabel" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -21,10 +21,13 @@
     </div>
 </template>
 <script setup>
-import { ref, watch, defineProps, watchEffect } from 'vue';
+import { ref, watch, defineProps, watchEffect, defineEmits } from 'vue';
 import { toast } from 'vue3-toastify';
 import axios from '../../plugins/axios';
 const props = defineProps({
+    photos: {
+        type: Array,
+    },
     photoId: {
         type: String,
     },
@@ -32,16 +35,20 @@ const props = defineProps({
         type: Function,
     }
 });
+const emits = defineEmits();
 
-const handleDeletePhoto = async () => {
-    await axios.delete(`/photos/${props.photoId}`, {
+const handleDeletePhoto = () => {
+    const changePhotos = props.photos.filter((photo) => photo._id !== props.photoId);
+    emits('update:photos', changePhotos);
+    toast.success('Photo deleted successfully');
+    axios.delete(`/photos/${props.photoId}`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
     })
     .then((res) => {
-        toast.success(res.data.message);
-        props.fetchPhotos();
+        // toast.success(res.data.message);
+        // props.fetchPhotos();
     })
     .catch((e) => {
         toast.error(e.response?.data?.message);
@@ -49,6 +56,6 @@ const handleDeletePhoto = async () => {
 }
 
 </script>
-<style lang="css">
+<style lang="css" scoped>
 
 </style>

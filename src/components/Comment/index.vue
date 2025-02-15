@@ -27,13 +27,19 @@
   
             <div class="modal-footer">
               <div class="card_comment d-flex flex-row align-items-center gap-2 py-2 px-3">
-                <div>
+                <div v-if="!loading">
                   <Avatar :word="convertWord(userData?.fullname)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" />
+                </div>
+                <div v-else>
+                    <LoadingBtn style="width: 35px; border-color: red #0000;"/>
                 </div>
                 <div class="w-100">
                   <input v-model="newComment" type="text" class="input_comment" placeholder="Comment here..." @keyup.enter="addComment" />
                 </div>
-                <i class="bi bi-send-fill text-primary ms-auto" style="cursor: pointer; font-size: 18px;" @click="addComment"></i>
+                <i class="bi bi-send-fill text-primary ms-auto" style="cursor: pointer; font-size: 18px;" @click="addComment" v-if="!loading"></i>
+                <div v-else>
+                    <LoadingBtn style="width: 35px; border-color: red #0000;"/>
+                </div>
               </div>
             </div>
           </div>
@@ -48,6 +54,7 @@ import Avatar from '../../components/Avatar/index.vue';
 import CommentItem from './commentItem.vue';
 import axios from '../../plugins/axios';
 import { toast } from 'vue3-toastify';
+import LoadingBtn from '../../components/LoadingBtn/index.vue';
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 const userData = JSON.parse(localStorage.getItem('userData'));
@@ -58,6 +65,7 @@ const photoId = ref("");
 const desc = ref("");
 const comments = ref([]);
 const newComment = ref("");
+const loading = ref(false);
   
 const props = defineProps({
     currentPhoto: { type: Object },
@@ -76,6 +84,7 @@ watchEffect(() => {
   
 
 const getComments = async () => {
+    loading.value = true;
     if (!photoId.value) return;
     try {
         const res = await axios.get(`/comments/${photoId.value}`);
@@ -83,11 +92,14 @@ const getComments = async () => {
     } catch (e) {
         console.error("Lỗi khi lấy bình luận:", e);
         toast.error("Lỗi khi tải bình luận!");
+    } finally {
+        loading.value = false;
     }
 };
   
 
 const addComment = async () => {
+    loading.value = true;
     if (!newComment.value.trim()) {
         toast.warning("Bình luận không được để trống!");
         return;
@@ -109,10 +121,13 @@ const addComment = async () => {
     } catch (e) {
         console.error("Lỗi khi gửi bình luận:", e);
         toast.error("Không thể gửi bình luận!");
-    } 
+    } finally {
+        loading.value = false;
+    }
 };
   
 const handleReply = async ({ commentId, replyText }) => {
+    loading.value = true;
     if (!replyText.trim()) {
         toast.warning("Phản hồi không được để trống!");
         return;
@@ -134,6 +149,8 @@ const handleReply = async ({ commentId, replyText }) => {
     } catch (e) {
         // console.error("Lỗi khi gửi phản hồi:", e);
         // toast.error("Không thể gửi phản hồi!");
+    } finally {
+        loading.value = false;
     }
 };
 

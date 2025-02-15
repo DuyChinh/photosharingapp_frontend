@@ -148,7 +148,7 @@ const handleFollowClick = async (user) => {
                 <div class="col-md-3">
                     <input type="text" class="form-control mb-2" placeholder="Search user" aria-label="Search user" aria-describedby="button-addon2" v-model="searchWord"/>
                     <div class="list-group lsg_user">
-                        <div class="list-group-item list-group-item-action" :class="u._id === user._id ? 'active': ''" aria-current="true" @click="changeCurrentUser(u)" style="cursor: pointer;"  v-for="u in users" :key="u.id">
+                        <div class="list-group-item list-group-item-action" :class="u?._id === user?._id ? 'active': ''" aria-current="true" @click="changeCurrentUser(u)" style="cursor: pointer;"  v-for="u in users" :key="u.id">
                             <h5 class="mb-1">{{ u.fullname }}</h5>
                             <p class="mb-1">@{{ u.username }}</p>
                             <div class="d-flex justify-content-between align-items-center">

@@ -1,9 +1,9 @@
 <template >
-    <div>
+    <div style="overflow: hidden; overflow-x: hidden; overflow-y: auto;">
         <Header class="mb-2"/>
         <div class="row flex-nowrap gap-3">
-            <div class="card col-2 ms-md-4 p-3" style="background: #333; color: #fff;">
-                <div class="card-title fs-5 fw-bold text-success">
+            <div class="card card_info p-4" style="background: #333; color: #fff;">
+                <div class="card-title fw-bold text-success">
                     <img src="../../../public/images/library.png" class="icon"/>
                     {{ user?.fullname?.split(" ")[user.fullname.split(" ").length - 1] }}'s library
                 </div>
@@ -18,11 +18,26 @@
                 </div>
             </div>
 
-            <div class="col-9 img_container">
+            <div class="img_container p-0">
                 <!-- <div class="card-title fs-5 text-danger fw-bold">
                     <img src="../../../public/images/photo01.png" class="icon"/>
                      List image
                 </div> -->
+                <div class="list_image_sm" >
+                    <div class="card-title fw-bold text-success">
+                        <img src="../../../public/images/library.png" class="icon"/>
+                        {{ user?.fullname?.split(" ")[user.fullname.split(" ").length - 1] }}'s library
+                        <div class="text-warning"><i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i></div>
+                    </div>
+                    <div class="card-text ms-auto">
+                        <p class="mt-3"><i class="bi bi-image"></i> Images: 
+                            <span class="badge rounded-pill text-bg-info text-white">{{ total_image }}</span>
+                        </p>
+                        <p class="mt-3 d-flex align-items-center gap-1"><i class="bi bi-person-bounding-box"></i> Follower: 
+                            <span class="badge rounded-pill text-bg-danger">{{ total_follower }}</span>
+                        </p>
+                    </div>
+                </div>
                 
                 <div class="list_image">
                     <div class="list_image_item p-3 d-flex justify-content-center align-items-center flex-column" v-if="userData._id === user_id">
@@ -38,22 +53,7 @@
                             <input type="file" @change="handleUpload" class="file-input" hidden multiple/>
                         </label>
                     </div>
-                    <div class="card list_image_item" aria-hidden="true" v-if="loading">
-                        <img src="https://cdn.dribbble.com/userupload/22142955/file/original-0c62063ff813ff78dc7dcdfc0d23256e.gif" class="card-img-top image w-100" alt="">
-                        <div class="card-body">
-                            <h5 class="card-title placeholder-glow">
-                            <span class="placeholder col-6"></span>
-                            </h5>
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-7"></span>
-                                <span class="placeholder col-4"></span>
-                                <span class="placeholder col-4"></span>
-                                <span class="placeholder col-6"></span>
-                                <span class="placeholder col-8"></span>
-                            </p>
-                            <a class="btn btn-primary disabled placeholder col-6 mt-2" aria-disabled="true"></a>
-                        </div>
-                    </div>
+
                     <div class="list_image_item p-2" v-for="photo in photos" :key="photo._id">
                         <RouterLink :to="{
                             path: `/photo`,
@@ -92,22 +92,42 @@
                             </button>
                         </div>
                     </div>
+
+                    <div class="card list_image_item" aria-hidden="true" v-if="loading">
+                        <img src="https://cdn.dribbble.com/userupload/22142955/file/original-0c62063ff813ff78dc7dcdfc0d23256e.gif" class="card-img-top image w-100" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title placeholder-glow">
+                            <span class="placeholder col-6"></span>
+                            </h5>
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-7"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-6"></span>
+                                <span class="placeholder col-8"></span>
+                            </p>
+                            <a class="btn btn-primary disabled placeholder col-6 mt-2" aria-disabled="true"></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <DeleteModal
-            :photoId="currentPhotoId"
-            :fetchPhotos="fetchPhotos"
-        />
         <EditPhoto
+            v-model:photos="photos"
             :photoId="currentPhotoId" 
             :currentPhoto="currentPhoto"
+            :fetchPhotos="fetchPhotos"
+        />
+        <DeleteModal
+            v-model:photos="photos"
+            :photoId="currentPhotoId"
             :fetchPhotos="fetchPhotos"
         />
         <ChangeShareStatus
             :photoId="currentPhotoId"
             :shareStatus="currentPhoto?.share_status"
             :fetchPhotos="fetchPhotos"
+            v-model:photos="photos"
         />
         <Comment
             :currentPhoto="currentPhoto"
@@ -243,15 +263,17 @@ const handleUpload = async (e) => {
         // console.log(error.response.data.message);
         
         // console.error("Lỗi khi upload:", error);
+    } finally {
+        loading.value = false;
     }
-    loading.value = false;
+    // loading.value = false;
 };
 
 
-const handleDelete = async (id) => {
-    setImgIdDelete(id);
-    setOpen(true);
-};
+// const handleDelete = async (id) => {
+//     setImgIdDelete(id);
+//     setOpen(true);
+// };
 
 const changeCurrentPhoto = (photo) => {
     currentPhotoId.value = photo._id;
@@ -260,6 +282,16 @@ const changeCurrentPhoto = (photo) => {
 };
 
 const handleLove = async (id) => {
+    photos.value = photos.value.map((photo) => {
+        if (photo._id === id) {
+            if (isPhotoLoved(photo)) {
+                photo.love = photo.love.filter((userId) => userId !== userData._id);
+            } else {
+                photo.love.push(userData._id);
+            }
+        }
+        return photo;
+    });
     await axios
       .patch(`${baseUrl}/photos/love/${id}`, { userId: userData._id }, {
           headers: {
@@ -268,7 +300,7 @@ const handleLove = async (id) => {
       })
       .then((res) => {
         //   toast.success(res.data.message);
-          fetchPhotos();
+        // fetchPhotos();
       })
       .catch((e) => {
         //   toast.error(e.response?.data?.message);
@@ -282,23 +314,39 @@ const isPhotoLoved = (photo) => {
 </script>
 <style lang="css" scoped>
 .img_container {
-   height: calc(100vh - 100px);
-   overflow: hidden;
-   overflow-y:scroll
+    width: 80%;
+    height: calc(100vh - 110px);
+    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.list_image_sm {
+    display: none;
+}
+
+.card_info {
+    width: 20%;
+}
+
+.card-title {
+    font-size: 20px;
 }
 
 .list_image {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
+    padding: 10px;
     /* justify-content: center; */
     /* width: 100%; */
 }
 .list_image_item {
     position: relative;
     width: calc(33% - 30px);
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px 0 #ccc;
     border-radius: 5px;
+    /* overflow: hidden; */
 }
 
 .list_image_item img {
@@ -362,30 +410,123 @@ p {
     background: rgba(0, 0, 0, 0.8);
 }
 
+
 @media screen and (max-width: 250px) {
-    
+    .list_image_item {
+        width: 90%;
+        margin: 0 auto;
+    }
+
+    .card_info {
+        display: none;
+    }
+
+    .img_container {
+        width: 100%;
+    }
+
+    .list_image_sm {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 87%;
+        margin: 0 auto;
+        padding:8px 20px;
+        border: 5px;
+        box-shadow: 0 0 10px 0 #ccc;
+    }
+
+    .card-title {
+        font-size: 12px;
+    }
 }
 
 @media screen and (min-width: 250px) and (max-width: 420px) {
-    
+    .list_image_item {
+        width: 90%;
+        margin: 0 auto;
+    }
+
+    .card_info {
+        display: none;
+    }
+
+    .img_container {
+        width: 100%;
+    }
+
+    .list_image_sm {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 87%;
+        margin: 0 auto;
+        padding:8px 20px;
+        border: 5px;
+        box-shadow: 0 0 10px 0 #ccc;
+    }
+
+    .card-title {
+        font-size: 14px;
+    }
 }
 
 @media screen and (min-width: 420px) and (max-width: 576px) {
-    
+    .list_image_item {
+        width: 90%;
+        margin: 0 auto;
+    }
+
+    .card_info {
+        display: none;
+    }
+
+    .card-title {
+        font-size: 14px;
+    }
+
+    .img_container {
+        width: 100%;
+    }
+
+    .list_image_sm {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 87%;
+        margin: 0 auto;
+        padding:8px 20px;
+        border: 5px;
+        box-shadow: 0 0 10px 0 #ccc;
+    }
 }
 
-@media screen and (min-width: 576px) and (max-width: 792px) {
-      
+@media screen and (min-width: 577px) and (max-width: 792px) {
+    .list_image_item {
+        width: 90%;
+        margin: 0 auto;
+    }
+
+    .card_info {
+        width: 25%;
+    }
+
+    .img_container {
+        width: 75%;
+    }
 }
 
 @media screen and (min-width: 792px) and (max-width: 992px) {
-    
+    .list_image_item {
+        width: calc(50% - 30px);
+    }
 }
 
 
 @media screen and (min-width: 992px) and (max-width: 1200px) {
-   
-
+    .list_image_item {
+        width: calc(50% - 30px);
+    }
 }
 
 @media screen and (min-width: 1200px) and (max-width: 1400px) {

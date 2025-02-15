@@ -37,7 +37,7 @@
     </div>
 </template>
 <script setup>
-import { ref, watch, watchEffect, defineProps } from 'vue';
+import { ref, watch, watchEffect, defineProps, defineEmits } from 'vue';
 const photoName = ref('');
 const desc = ref('');
 const shareStatus = ref('public');
@@ -46,6 +46,9 @@ import axios from '../../plugins/axios';
 const loading = ref(false);
 const token = localStorage.getItem('token');
 const props = defineProps({
+    photos: {
+        type: Array,
+    },
     photoId: {
         type: String,
         // required: true,
@@ -57,6 +60,7 @@ const props = defineProps({
         type: Function,
     }  
 });
+const emit = defineEmits(['photos']);
 
 const setDefault = () => {
     photoName.value = props?.currentPhoto?.name;
@@ -66,6 +70,15 @@ const setDefault = () => {
 watchEffect(setDefault);
 
 const handleEditPhoto = () => {
+    const changePhotos =  props.photos.map((photo) => {
+        if (photo._id === props.photoId) {
+            photo.name = photoName.value;
+            photo.description = desc.value;
+            photo.share_status = shareStatus.value;
+        }
+        return photo;
+    });
+    emit('photos', changePhotos);
     // loading.value = true;
     const updateData = {
         name: photoName?.value,
@@ -78,8 +91,8 @@ const handleEditPhoto = () => {
         },
     })
     .then((res) => {
-        toast.success(res.data.message);
-        props.fetchPhotos();
+        // toast.success(res.data.message);
+        // props.fetchPhotos();
     })
     .catch((e) => {
         toast.error(e.response?.data?.message);
