@@ -106,6 +106,7 @@ const addComment = async () => {
     }
 
     const body = {
+        user_post_id: props.user._id,
         user_id: userData._id,
         username: userData.username,
         fullname: userData.fullname,
@@ -134,6 +135,7 @@ const handleReply = async ({ commentId, replyText }) => {
     }
   
     const body = {
+        user_post_id: props.user._id,
         user_id: userData._id,
         username: userData.username,
         fullname: userData.fullname,
