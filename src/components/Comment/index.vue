@@ -9,7 +9,8 @@
             </div>
             <div class="modal-body" style="overflow-y: scroll;">
               <p class="d-flex align-items-center gap-1">
-                <Avatar :word="convertWord(props?.user?.fullname)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" />
+                <Avatar :word="convertWord(props?.user?.fullname)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" v-if="props.user?.avatar.length === 0"/>
+                <img :src="props.user?.avatar" alt="" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%; margin: 0;" v-else/>
                 {{ props?.user?.fullname }}
               </p>
               <p class="fw-bold fs-3">{{ photo_name }}</p>
@@ -28,7 +29,8 @@
             <div class="modal-footer">
               <div class="card_comment d-flex flex-row align-items-center gap-2 py-2 px-3">
                 <div v-if="!loading">
-                  <Avatar :word="convertWord(userData?.fullname)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" />
+                  <Avatar :word="convertWord(userData?.fullname)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" v-if="props.user?.avatar.length === 0"/>
+                  <img :src="props.user?.avatar" alt="" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%; margin: 0;" v-else/>
                 </div>
                 <div v-else>
                     <LoadingBtn style="width: 35px; border-color: red #0000;"/>
@@ -113,6 +115,7 @@ const addComment = async () => {
         photo_id: photoId.value,
         description: newComment.value.trim(),
         time: new Date(),
+        avatar: userData.avatar,
     };
 
     try {

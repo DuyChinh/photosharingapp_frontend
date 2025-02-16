@@ -67,7 +67,6 @@
                         <LoadingBtn style="width: 35px; border-color: #fff #0000"/>
                      </button>
                     <button class="btn-sm-show mt-2" @click="toggleForm">Sign In</button>
-
                 </form>
         
             </div>
@@ -87,6 +86,12 @@
                     Forgot your password?
                 </router-link>
                 <!-- <a href="#">Forgot your password?</a> -->
+                <GoogleSignInButton
+                    shape="circle"
+                    @success="handleLoginSuccess"
+                    @error="handleLoginError"
+                >
+                </GoogleSignInButton>
                 <button class="mt-2" type="submit" v-if="!loading">
                         Sign In
                 </button>
@@ -121,7 +126,8 @@ import { onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue3-toastify'
 import LoadingBtn from '../../components/LoadingBtn/index.vue';
 import changePassword from '../changePassword/index.vue';
-import axios from 'axios';
+import axios from '../../plugins/axios';
+import { GoogleSignInButton } from 'vue3-google-signin';
 const baseUrl = import.meta.env.VITE_BASE_URL;
 const isSignUp = ref(true);
 const isLogin = ref(false);
@@ -140,7 +146,7 @@ const handleSignIn = async() => {
         // toast.error('Please enter email and password');
         return;
     }
-    await axios.post(`${baseUrl}/auth/login`, {
+    await axios.post(`/auth/login`, {
         username: email.value,
         password: password.value
     })
@@ -152,6 +158,7 @@ const handleSignIn = async() => {
             _id: user._id,
             username: user.username,
             fullname: user.fullname,
+            avatar: user.avatar,
         }));
         router.push("/home");
     })
@@ -169,7 +176,7 @@ const handleSignUp = async() => {
         toast.error('Please enter email, password and full name');
         return;
     }
-    await axios.post(`${baseUrl}/auth/signup`, {
+    await axios.post(`/auth/signup`, {
         username: email.value,
         password: password.value,
         fullname: fullName.value
@@ -222,6 +229,36 @@ const showSlide = (index) => {
         carouselInner.style.transform = `translateX(${offset}%)`;
     }
   }, 1000); 
+};
+
+const handleLoginSuccess = async(response) => {
+    const { credential } = response;
+    if (credential) {
+    await axios
+        .post(`/auth/google/signin`, {
+            token: credential,
+        })
+        .then((res) => {
+            // clearInterval(slideInterval);
+            const user = res.data.userData;
+            localStorage.setItem('token', res.data.accessToken);
+            localStorage.setItem('userData', JSON.stringify({
+                _id: user._id,
+                username: user.username,
+                fullname: user.fullname,
+                avatar: user.avatar,
+            }));
+            router.push("/home");
+        })
+        .catch((error) => {
+            toast(`${error?.response?.data?.msg}` );
+        });
+    }
+};
+
+// handle an error event
+const handleLoginError = () => {
+  console.error("Login failed");
 };
 
 onMounted(() => {

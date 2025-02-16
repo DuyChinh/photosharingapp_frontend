@@ -8,12 +8,16 @@ const isMenu = ref(false);
 import { toast } from 'vue3-toastify'
 import axios from '../../plugins/axios';
 import LoadingBtn from '../../components/LoadingBtn/index.vue'
+import Loading from '../../components/Loading/index.vue'
 const token = localStorage.getItem('token');
 const route = useRouter();
 const userData = JSON.parse(localStorage.getItem('userData'));
 const word = userData?.fullname.split(" ")[userData?.fullname.split(" ").length - 1][0];
 const loading = ref(false);
+const loadinglogout = ref(false);
 const isNoti = ref(false);
+const user_work_id = ref("");
+const user = ref({});
 const notis = ref([]);
 
 
@@ -21,19 +25,44 @@ if (localStorage.getItem('mode')) {
     mode.value = localStorage.getItem('mode') === 'light' ? true : false;
 }
 
-const getNotis = async() => {
-    await axios.get(`/notifications/${userData?._id}`,
-    {
+const getUser = async(user_id) => {
+    loading.value = true;
+    await axios.get(`/users/${user_id}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     })
     .then((res) => {
-        notis.value = res.data.data;
+        user.value = res.data.data;
+    })
+    .catch((e) => {
+        // toast.error(e.response?.data?.message);
+    }).finally(() => {
+        loading.value = false;
+    });
+};
+
+const getNotis = async () => {
+    loading.value = true;
+    await axios.get(`/notifications/${userData?._id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    .then(async (res) => {
+        let notifications = res.data.data;
+        notis.value = await Promise.all(notifications.map(async (noti) => {
+            await getUser(noti?.user_work_id);
+            noti.avatar = user.value.avatar;
+            return noti;
+        }));
+        // console.log(notis.value);
     })
     .catch((e) => {
         toast.error(e.response?.data?.message);
-    });
+    }).finally(() => {
+        loading.value = false;
+    }); 
 };
 watchEffect(getNotis);
 
@@ -84,7 +113,7 @@ onUnmounted(() => {
 });
 
 const logout = async() => {
-    loading.value = true;
+    loadinglogout.value = true;
     showMenu();
     const body = {
         msg: "inactive",
@@ -104,7 +133,7 @@ const logout = async() => {
         toast.error(e.response?.data?.message);
     })
     .finally(() => {
-        loading.value = false;
+        loadinglogout.value = false;
     });
 };
 
@@ -130,8 +159,11 @@ const logout = async() => {
                         <span class="noti_num">{{ notis.length }}</span>
                     </div>
 
-                    <button class="btn_avatar" style="background: transparent; border: none; color: #fff;" v-if="!loading">
-                        <Avatar :word="word" style="width: 35px; height: 35px; line-height: 35px;" @click="showMenu"/> 
+                    <button class="btn_avatar" style="background: transparent; border: none; color: #fff;" v-if="!loadinglogout">
+                        <Avatar :word="word" style="width: 35px; height: 35px; line-height: 35px;" @click="showMenu" v-if="userData?.avatar?.length === 0"/> 
+                        <div @click="showMenu" v-else>
+                            <img :src="userData?.avatar" alt="" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;">
+                        </div>
                     </button>
 
                     <button class="btn_nav_item" v-else>
@@ -143,9 +175,12 @@ const logout = async() => {
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <div class="flex_full" style="height: 35px">
-                                <Avatar :word="word" style="width: 35px; height: 35px; line-height: 35px; color: #fff;"/> 
+                                <Avatar :word="word" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" v-if="userData?.avatar?.length === 0"/> 
+                                <div v-else>
+                                    <img :src="userData?.avatar" alt="" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;">
+                                </div>
                                 <div class="mt-3" style="height: 35px">
-                                    <p style="">{{ userData?.fullname }}</p>
+                                    <p class="fw-bold">{{ userData?.fullname }}</p>
                                 </div>
                             </div>
                         </li>
@@ -182,8 +217,11 @@ const logout = async() => {
                         
                         <li class="nav-item p-2" v-for="noti in notis" :key="noti._id">
                             <router-link :to="`/library?user_id=${noti.title.includes('upload') ? noti?.user_work_id : noti?.user_id}`" class="d-flex align-items-start gap-2" style="text-decoration: none;">
-                                <div>
-                                <Avatar :word="convertWord(noti?.title)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;"/> 
+                                <div v-if="noti?.avatar?.length === 0">
+                                    <Avatar :word="convertWord(noti?.title)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;"/>
+                                </div>
+                                <div v-else>
+                                    <img :src="userData?.avatar" alt="" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;"/>
                                 </div>
                                 <div class="d-flex flex-column gap-0">
                                 <p class="text-success">{{ noti?.message }}</p>
@@ -191,6 +229,10 @@ const logout = async() => {
                                 </div>
                             </router-link>
                         </li>   
+
+                        <li v-if="loading">
+                            <Loading/>
+                        </li>
                 
                         <!-- <hr/> -->
                         <!-- <li class="nav-item">

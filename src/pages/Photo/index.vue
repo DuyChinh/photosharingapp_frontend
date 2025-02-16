@@ -13,13 +13,17 @@
         <div class="info_container text-center">
             <p class="fw-bold fs-3">{{ photo?.name }}</p>
             <p>{{ photo?.description }}</p>
-            <p class="text-warning"><span class="text-success fw-bold">Up at</span> {{ timeUp}} </p>
-            <h4 class="d-flex align-items-center gap-2"><Avatar :word="word"/> {{ photo?.fullname }}</h4>
+            <p class="text-warning"><span class="text-success fw-bold">Up at</span> {{ timeUp }} </p>
+            <div class="d-flex align-items-center gap-2">
+                <Avatar :word="word" v-if="photo?.avatar?.length === 0"/> 
+                <img :src="photo?.avatar" alt="" style="width: 40px;object-fit: cover; border-radius: 50%; margin: 0;">
+                <p class="fs-4 fw-bold m-0">{{ photo?.fullname }}</p>
+            </div>
         </div>
     </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted, watchEffect, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watchEffect, watch, defineProps } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 import axios from '../../plugins/axios';
 import moment from 'moment';
@@ -33,6 +37,7 @@ const photo_id = route.query.id;
 const word = ref('');
 const photo = ref();
 const timeUp = ref();
+
 const fetchPhoto = async () => {
     await axios.get(`/photos/${photo_id}`, {
         headers: {

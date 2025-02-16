@@ -2,7 +2,8 @@
     <div class="comment">
         <div class="list_comment_item d-flex gap-2 mt-2">
             <div>
-                <Avatar :word="convertWord(comment.fullname)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" />
+                <Avatar :word="convertWord(comment.fullname)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;" v-if="comment?.avatar?.length === 0"/>
+                <img :src="comment?.avatar" alt="" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%; margin: 0;" v-else/>
             </div>
             <div class="w-100">
                 <div class="d-flex justify-content-between align-items-center">
