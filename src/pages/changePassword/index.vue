@@ -3,8 +3,9 @@
       <div class="container">
         <div class="form-container change-password-container">
           <form @submit.prevent="handleChangePassword">
-            <img class="login_logo" src="../../../public/images/password-change.png" alt=""/>
-            <h1 class="mb-4">Change Password</h1>
+            <h1 class="mb-4">
+                <img class="login_logo" src="../../../public/images/password-change.png" alt="" style="width: 50px"/> Change Password
+            </h1>
             <input v-model="email" type="text" placeholder="Nickname or Email" required/>
             <input v-model="newPassword" type="password" placeholder="New Password" required />
             <input v-model="confirmPassword" type="password" placeholder="Confirm Password" required class="mt-3"/>
