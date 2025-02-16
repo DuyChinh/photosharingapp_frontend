@@ -54,6 +54,23 @@
                         </label>
                     </div>
 
+                    <div class="card list_image_item" aria-hidden="true" v-if="loading">
+                        <img src="https://cdn.dribbble.com/userupload/22142955/file/original-0c62063ff813ff78dc7dcdfc0d23256e.gif" class="card-img-top image w-100" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title placeholder-glow">
+                            <span class="placeholder col-6"></span>
+                            </h5>
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-7"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-6"></span>
+                                <span class="placeholder col-8"></span>
+                            </p>
+                            <a class="btn btn-primary disabled placeholder col-6 mt-2" aria-disabled="true"></a>
+                        </div>
+                    </div>
+
                     <div class="list_image_item p-2" v-for="photo in photos" :key="photo._id">
                         <RouterLink :to="{
                             path: `/photo`,
@@ -90,23 +107,6 @@
                             <button @click="changeCurrentPhoto(photo)" class="badge rounded-pill text-bg-danger" data-bs-target="#deleteModal" data-bs-toggle="modal">
                                 <i class="bi bi-trash-fill"></i> Delete
                             </button>
-                        </div>
-                    </div>
-
-                    <div class="card list_image_item" aria-hidden="true" v-if="loading">
-                        <img src="https://cdn.dribbble.com/userupload/22142955/file/original-0c62063ff813ff78dc7dcdfc0d23256e.gif" class="card-img-top image w-100" alt="">
-                        <div class="card-body">
-                            <h5 class="card-title placeholder-glow">
-                            <span class="placeholder col-6"></span>
-                            </h5>
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-7"></span>
-                                <span class="placeholder col-4"></span>
-                                <span class="placeholder col-4"></span>
-                                <span class="placeholder col-6"></span>
-                                <span class="placeholder col-8"></span>
-                            </p>
-                            <a class="btn btn-primary disabled placeholder col-6 mt-2" aria-disabled="true"></a>
                         </div>
                     </div>
                 </div>

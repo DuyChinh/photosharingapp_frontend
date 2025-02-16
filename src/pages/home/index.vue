@@ -141,7 +141,7 @@ const handleFollowClick = async (user) => {
 
 </script>
 <template>
-    <div>
+    <div style="overflow: hidden; overflow-x: hidden; overflow-y: auto;">
         <Header class="mb-2"/>
         <div class="">
             <div class="row gap-3 flex-wrap">
@@ -232,7 +232,7 @@ const handleFollowClick = async (user) => {
 
 .lsg_user, .lsg_photo {
     width: 100%;
-    max-height: calc(100vh - 100px);
+    max-height: calc(100vh - 150px);
     overflow-y: auto;
 }
 

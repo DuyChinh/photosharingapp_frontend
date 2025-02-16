@@ -14,11 +14,11 @@ const router = createRouter({
         return '/login'
       },
     },
-    // {
-    //   path: '/home',
-    //   name: 'Home',
-    //   component: () => import('../pages/Home/index.vue'),
-    // },
+    {
+      path: '/home',
+      name: 'Home',
+      component: () => import('../pages/Home/index.vue'),
+    },
   
     ...routes,
     {
@@ -33,7 +33,7 @@ router.beforeEach((to, from, next) => {
   if(to.path === '/login' && userData.username) {
     next(from.fullPath);
   }
-  else if (to.path !== '/login' && !userData.username) {
+  else if (to.path !== '/login' && !userData.username && to.path !== '/changepassword') {
     next('/login');
   } else {
     next();

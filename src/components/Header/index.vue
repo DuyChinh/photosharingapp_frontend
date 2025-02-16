@@ -111,7 +111,7 @@ const logout = async() => {
 
 </script>
 <template>
-    <div>
+    <div style="max-height: 100px;">
         <nav class="navbar navbar-container bg-primary text-white py-3">
             <div class="container-fluid">
                 <RouterLink to="/home" class="navbar-brand text-white">

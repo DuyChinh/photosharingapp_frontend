@@ -83,7 +83,10 @@
                 <!-- <span>or use your email account</span> -->
                 <input v-model="email" type="text" placeholder="Nickname or Email" required/>
                 <input v-model="password" type="password" placeholder="Password" required/>
-                <a href="#">Forgot your password?</a>
+                <router-link to="/changepassword">
+                    Forgot your password?
+                </router-link>
+                <!-- <a href="#">Forgot your password?</a> -->
                 <button class="mt-2" type="submit" v-if="!loading">
                         Sign In
                 </button>
@@ -91,7 +94,6 @@
                     <LoadingBtn style="width: 35px; border-color: #fff #0000"/>
                 </button>
                 <button class="btn-sm-show mt-2" @click="toggleForm">Sign Up</button>
-
             </form>
             </div>
             <div class="overlay-container">
@@ -118,6 +120,7 @@ import { ref } from 'vue'
 import { onMounted, onUnmounted } from 'vue';
 import { toast } from 'vue3-toastify'
 import LoadingBtn from '../../components/LoadingBtn/index.vue';
+import changePassword from '../changePassword/index.vue';
 import axios from 'axios';
 const baseUrl = import.meta.env.VITE_BASE_URL;
 const isSignUp = ref(true);
