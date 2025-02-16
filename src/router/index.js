@@ -14,6 +14,10 @@ const router = createRouter({
         return '/login'
       },
     },
+    {
+      path: '/login',
+      component: () => import('../../src/pages/Login/index.vue'),
+    }
     // {
     //   path: '/home',
     //   name: 'Home',
