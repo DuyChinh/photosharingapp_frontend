@@ -275,7 +275,7 @@ const logout = async() => {
                                     <Avatar :word="convertWord(noti?.title)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;"/>
                                 </div>
                                 <div v-else>
-                                    <img :src="userData?.avatar" alt="" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;"/>
+                                    <img :src="noti?.avatar" alt="" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;"/>
                                 </div>
                                 <div class="d-flex flex-column gap-0">
                                 <p class="text-success">{{ noti?.message }}</p>
