@@ -69,7 +69,7 @@ const getNotis = async () => {
         loading.value = false;
     }); 
 };
-watchEffect(getNotis);
+// watchEffect(getNotis);
 
 const convertTime = (time) => moment(time).fromNow();
 
