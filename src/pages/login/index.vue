@@ -232,6 +232,7 @@ const showSlide = (index) => {
 };
 
 const handleLoginSuccess = async(response) => {
+    loading.value = true;
     const { credential } = response;
     if (credential) {
     await axios
@@ -239,7 +240,7 @@ const handleLoginSuccess = async(response) => {
             token: credential,
         })
         .then((res) => {
-            // clearInterval(slideInterval);
+            clearInterval(slideInterval);
             const user = res.data.userData;
             localStorage.setItem('token', res.data.accessToken);
             localStorage.setItem('userData', JSON.stringify({
@@ -252,7 +253,9 @@ const handleLoginSuccess = async(response) => {
         })
         .catch((error) => {
             toast(`${error?.response?.data?.msg}` );
-        });
+        }).finally(() => {
+            loading.value = false;
+        }); 
     }
 };
 

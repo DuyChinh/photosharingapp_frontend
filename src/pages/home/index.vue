@@ -150,7 +150,7 @@ const handleFollowClick = async (user) => {
                     <div class="list-group lsg_user">
                         <div class="list-group-item list-group-item-action" :class="u?._id === user?._id ? 'active': ''" aria-current="true" @click="changeCurrentUser(u)" style="cursor: pointer;"  v-for="u in users" :key="u.id">
                             <h5 class="mb-1">{{ u.fullname }}</h5>
-                            <p class="mb-1">@{{ u.username }}</p>
+                            <p class="mb-1" style="font-size: 15px;">@{{ u.username }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <button class="btn btn-success btn-sm">{{ u?.follow?.length }} follower</button>
                                 <i class="bi bi-bookmark-check-fill text-warning" v-if="u._id === userData._id"></i>
@@ -234,6 +234,17 @@ const handleFollowClick = async (user) => {
     width: 100%;
     max-height: calc(100vh - 150px);
     overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.lsg_user .list-group-item {
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.lsg_user {
+    /* max-width: 300px; */
 }
 
 .img_item img {

@@ -69,7 +69,7 @@ const cancelChangePassword = () => {
     position: relative;
     height: 100vh;
     background-color: #f1f7f9;
-    background: url("../../../public/images/password-change-bg.jpg") no-repeat center center fixed;
+    /* background: url("../../../public/images/password-change-bg.jpg") no-repeat center center fixed; */
     background-size: cover;
 }
 

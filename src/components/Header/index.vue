@@ -18,7 +18,10 @@ const loadinglogout = ref(false);
 const isNoti = ref(false);
 const user_work_id = ref("");
 const user = ref({});
+const readAll = ref(true);
 const notis = ref([]);
+const notiLength = ref(0);
+const notiAllLength = ref(0);
 
 
 if (localStorage.getItem('mode')) {
@@ -43,6 +46,7 @@ const getUser = async(user_id) => {
 };
 
 const getNotis = async () => {
+    readAll.value = true;
     loading.value = true;
     await axios.get(`/notifications/${userData?._id}`, {
         headers: {
@@ -56,6 +60,7 @@ const getNotis = async () => {
             noti.avatar = user.value.avatar;
             return noti;
         }));
+        notiAllLength.value = notis.value.length;
         // console.log(notis.value);
     })
     .catch((e) => {
@@ -94,7 +99,7 @@ const showMenu = () => {
 }
 
 const handleClickOutside = (event) => {
-    if (!event.target.closest('.user_menu') && !event.target.closest('.btn_avatar') && !event.target.closest('.bell_block')) {
+    if (!event.target.closest('.user_menu') && !event.target.closest('.btn_avatar') && !event.target.closest('.bell_block') && !event.target.closest('.btn-read-all') && !event.target.closest('.btn-unread')) {
         isMenu.value = false;
         isNoti.value = false;
     }
@@ -103,6 +108,50 @@ const handleClickOutside = (event) => {
 const showNoti = () => {
     isNoti.value = !isNoti.value;
 }
+
+const getUnreadNotis = async() => {
+    readAll.value = false;
+    loading.value = true;
+    await axios.get(`/notifications/unread/${userData?._id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    .then(async (res) => {
+        let notifications = res.data.data;
+        notis.value = await Promise.all(notifications.map(async (noti) => {
+            await getUser(noti?.user_work_id);
+            noti.avatar = user.value.avatar;
+            return noti;
+        }));
+        notiLength.value = notis.value.length;
+        // readAll.value = false;
+    })
+    .catch((e) => {
+        toast.error(e.response?.data?.message);
+    }).finally(() => {
+        loading.value = false;
+    });
+}
+
+watchEffect(getUnreadNotis);
+
+const readNoti = async(noti_id) => {
+    loading.value = true;
+    await axios.post(`/notifications/mark-as-read/${noti_id}`,{}, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    .then((res) => {
+        getUnreadNotis();
+    })
+    .catch((e) => {
+        // toast.error(e.response?.data?.message); 
+    }).finally(() => {
+        loading.value = false;
+    });
+};
 
 onMounted(() => {
     window.addEventListener('click', handleClickOutside);
@@ -156,7 +205,7 @@ const logout = async() => {
 
                     <div class="bell_block" @click="showNoti">
                         <i class="bi bi-bell-fill" style="font-size: 21px; cursor: pointer;"></i>
-                        <span class="noti_num">{{ notis.length }}</span>
+                        <span class="noti_num">{{ notiLength }}</span>
                     </div>
 
                     <button class="btn_avatar" style="background: transparent; border: none; color: #fff;" v-if="!loadinglogout">
@@ -209,13 +258,18 @@ const logout = async() => {
                             </div>
                         </li>
 
-                        <li>
+                        <li class="mt-2 px-2 d-flex gap-3">
+                            <button class="badge text-white btn-read-all" :class="readAll ? 'text-bg-primary' : 'text-bg-secondary'" style="border: none;" @click="getNotis">All ({{(notiAllLength)}})</button>
+                            <button class="badge text-white btn-unread" :class="readAll ? 'text-bg-secondary': 'text-bg-primary'" style="border: none;" @click="getUnreadNotis">Unread ({{ notiLength }})</button>
+                        </li>
+
+                        <li class="mt-1">
                             <div class="nav-item p-2" v-if="notis.length === 0">
                                 <p class="">No new notifications</p>
                             </div>
                         </li>
                         
-                        <li class="nav-item p-2" v-for="noti in notis" :key="noti._id">
+                        <li class="nav-item nav-item-noti p-2" v-for="noti in notis" :key="noti._id" @click="readNoti(noti._id)">
                             <router-link :to="`/library?user_id=${noti.title.includes('upload') ? noti?.user_work_id : noti?.user_id}`" class="d-flex align-items-start gap-2" style="text-decoration: none;">
                                 <div v-if="noti?.avatar?.length === 0">
                                     <Avatar :word="convertWord(noti?.title)" style="width: 35px; height: 35px; line-height: 35px; color: #fff;"/>
@@ -302,8 +356,13 @@ p {
 }
 
 .noti_menu ul li:hover{
-    /* opacity: 0.7; */
     cursor: pointer;
+}
+
+.nav-item-noti:hover {
+    background: #E3F2FD;
+    border-radius: 5px;
+    opacity: 0.9;
 }
 
 .btn_nav_item {
