@@ -58,7 +58,7 @@ const getUsers = async() => {
         root_users.value = users.value;
     })
     .catch((e) => {
-        toast.error(e.response?.data?.message);
+        // toast.error(e.response?.data?.message);
     }).finally(() => {
         loading.value = false;
     });
@@ -79,7 +79,7 @@ const fetchPhotos = async () => {
         }
     })
     .catch((e) => {
-        toast.error(e.response?.data?.message);
+        // toast.error(e.response?.data?.message);
     }).then(() => {
         loading.value = false;
     });

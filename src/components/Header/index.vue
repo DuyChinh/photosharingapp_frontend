@@ -64,7 +64,7 @@ const getNotis = async () => {
         // console.log(notis.value);
     })
     .catch((e) => {
-        toast.error(e.response?.data?.message);
+        // toast.error(e.response?.data?.message);
     }).finally(() => {
         loading.value = false;
     }); 
@@ -128,7 +128,7 @@ const getUnreadNotis = async() => {
         // readAll.value = false;
     })
     .catch((e) => {
-        toast.error(e.response?.data?.message);
+        // toast.error(e.response?.data?.message);
     }).finally(() => {
         loading.value = false;
     });
